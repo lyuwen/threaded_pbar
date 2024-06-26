@@ -1,0 +1,9 @@
+dist
+build
+*.egg-info
+torch-examples
+__pycache__
+*.pt
+
+.DS_Store
+.*.swp

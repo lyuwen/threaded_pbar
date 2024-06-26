@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "threaded_pbar"
+dynamic = ["version"]
+readme = "README.md"
+description = "Threaded Progress Bar"
+authors = [
+    { name = "Lyuwen Fu", email = "fulvwen@gmail.com" }
+]
+requires-python = ">=3.8"
+license = { file = "LICENSE" }
+dependencies = [
+    "tqdm",
+]
+
+
+[project.urls]
+Homepage = "http://github.com/lyuwen/threaded_pbar"
+Repository = "http://github.com/lyuwen/threaded_pbar"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.dynamic]
+version = { attr = "threaded_pbar.__version__" }
