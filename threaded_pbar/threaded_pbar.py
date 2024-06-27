@@ -16,7 +16,7 @@ class ThreadedProgressBar:
 
     def __init__(self, desc=None, total=None, disable=False, unit='it',
                  smoothing=0.3, bar_format=None, initial=0,
-                 position=None, pbar_timeout=1e-3, worker_type=Thread, **kwargs):
+                 position=None, pbar_timeout=1e-3, worker_type=Thread, queue=None, **kwargs):
         self.desc = desc
         self.total = total
         self.disable = disable
@@ -30,10 +30,13 @@ class ThreadedProgressBar:
         self.pbar = None
         self.pbar_timeout = pbar_timeout
         self._worker_type = worker_type
+        self.manager = None
+        self.pbar_queue = queue
 
 
-    @staticmethod
+    @classmethod
     def _run_threaded_progressbar(
+        cls,
         queue: QueueType,
         timeout: float,
         pbar_args: dict,
@@ -67,8 +70,9 @@ class ThreadedProgressBar:
             position=self.position,
             **self.kwargs,
             )
-        self.manager = multiprocessing.Manager()
-        self.pbar_queue: QueueType = self.manager.Queue()
+        if self.pbar_queue is None:
+            self.manager = multiprocessing.Manager()
+            self.pbar_queue: QueueType = self.manager.Queue()
         self.pbar_update_worker = self._worker_type(
             target=self._run_threaded_progressbar, args=(self.pbar_queue, self.pbar_timeout, pbar_args), daemon=True
         )
@@ -87,4 +91,5 @@ class ThreadedProgressBar:
     def close(self):
         self.pbar_queue.put(None)
         self.pbar_update_worker.join()
-        self.manager.shutdown()
+        if self.manager is not None:
+            self.manager.shutdown()
